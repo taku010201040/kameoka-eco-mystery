@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詳細集計レポート | Animated Summary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e0e0e5;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+            overflow: hidden;
+        }
+
+        #container-wrapper {
+            width: 1920px;
+            height: 1080px;
+            background: #f4f4f9;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+            /* Scale logic via JS */
+        }
+
+        /* --- COPIED STYLES FROM V2 --- */
+        .header {
+            height: 100px;
+            background: #fff;
+            border-bottom: 4px solid #E60012;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #111;
+        }
+
+        .header h1 span {
+            color: #E60012;
+        }
+
+        .meta-box {
+            text-align: right;
+        }
+
+        .meta-date {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .meta-count {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .meta-count span {
+            font-size: 28px;
+            color: #E60012;
+            margin: 0 4px;
+        }
+
+        .main {
+            padding: 30px 50px;
+            display: grid;
+            grid-template-columns: 320px 1fr 1fr 340px;
+            grid-template-rows: 160px 1fr 1fr;
+            gap: 20px;
+            height: 980px;
+            /* 1080 - 100 */
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            font-size: 14px;
+            font-weight: 900;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #E60012;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .hero-metric {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+            border-bottom: 4px solid #E60012;
+        }
+
+        .hero-metric .label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .hero-metric .value {
+            font-size: 64px;
+            font-weight: 900;
+            color: #E60012;
+            line-height: 1;
+        }
+
+        .hero-metric .value span {
+            font-size: 24px;
+            color: #999;
+            margin-left: 2px;
+        }
+
+        .hero-metric .sub {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .area-hero-1 {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .area-hero-2 {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .area-hero-3 {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .area-hero-4 {
+            grid-column: 4;
+            grid-row: 1;
+        }
+
+        .area-left {
+            grid-column: 1;
+            grid-row: 2 / span 2;
+        }
+
+        .area-mid-top {
+            grid-column: 2 / span 2;
+            grid-row: 2;
+        }
+
+        .area-mid-bot {
+            grid-column: 2 / span 2;
+            grid-row: 3;
+        }
+
+        .area-right {
+            grid-column: 4;
+            grid-row: 2 / span 2;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .stat-bar-bg {
+            width: 100px;
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+
+        .stat-bar {
+            height: 100%;
+            border-radius: 5px;
+            background: #E60012;
+            transform-origin: left;
+        }
+
+        /* Add transform-origin */
+        .stat-val {
+            font-size: 13px;
+            font-weight: 700;
+            width: 40px;
+            text-align: right;
+            color: #333;
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #f4f4f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #555;
+            font-weight: 600;
+            border: 1px solid #e0e0e0;
+        }
+
+        .tag.highlight {
+            background: #fff0f0;
+            color: #E60012;
+            border-color: #ffcccc;
+        }
+
+        .voice-box {
+            background: #f9f9f9;
+            border-left: 4px solid #E60012;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #444;
+            line-height: 1.5;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .insight-list {
+            list-style: none;
+        }
+
+        .insight-list li {
+            margin-bottom: 12px;
+            padding-left: 24px;
+            position: relative;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .insight-list li::before {
+            content: '✔';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #E60012;
+            font-weight: 900;
+            font-size: 14px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 15px;
+            background: transparent;
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* --- ANIMATIONS - INITIAL STATES --- */
+        .card {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .hero-metric .value {
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        .tag {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            70% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Controls */
+        #replay-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            transition: transform 0.2s;
+        }
+
+        #replay-btn:hover {
+            transform: scale(1.05);
+            background: #555;
+        }
+
+        #replay-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="container-wrapper">
+
+        <div class="header">
+            <h1>ロボットからの挑戦状！ <span>詳細集計レポート</span></h1>
+            <div class="meta-box">
+                <div class="meta-date">開催: 2026.02.07 / 02.14</div>
+                <div class="meta-count">有効回答 <span>33</span> 件</div>
+            </div>
+        </div>
+
+        <div class="main">
+
+            <!-- TOP ROW: HERO METRICS -->
+            <div class="card hero-metric area-hero-1">
+                <div class="label">😄 参加満足度</div>
+                <div class="value">97<span>%</span></div>
+                <div class="sub">とても満足 29名 / 満足 3名</div>
+            </div>
+
+            <div class="card hero-metric area-hero-2">
+                <div class="label">💰 価格納得感</div>
+                <div class="value">96<span>%</span></div>
+                <div class="sub">妥当 21名 / 安い 11名</div>
+            </div>
+
+            <div class="card hero-metric area-hero-3">
+                <div class="label">🔄 次回参加意向</div>
+                <div class="value">88<span>%</span></div>
+                <div class="sub">ぜひ参加したい 23名</div>
+            </div>
+
+            <div class="card hero-metric area-hero-4">
+                <div class="label">📣 口コミ流入</div>
+                <div class="value">48<span>%</span></div>
+                <div class="sub">知人紹介 16名 (最多)</div>
+            </div>
+
+            <!-- LEFT -->
+            <div class="card area-left">
+                <div class="card-header">👥 参加者の属性</div>
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:8px;">お子様の年齢構成</div>
+                    <div class="stat-row">
+                        <div class="stat-label">高学年</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="55%"></div>
+                        </div>
+                        <div class="stat-val">18</div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label">低学年</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="45%"></div>
+                        </div>
+                        <div class="stat-val">15</div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label">未就学</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="15%"></div>
+                        </div>
+                        <div class="stat-val">5</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:8px;">認知経路 (TOP 3)</div>
+                    <div class="stat-row">
+                        <div class="stat-label">紹介</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="48%"></div>
+                        </div>
+                        <div class="stat-val">16</div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label">SNS</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="36%"></div>
+                        </div>
+                        <div class="stat-val">12</div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label">チラシ</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="9%"></div>
+                        </div>
+                        <div class="stat-val">3</div>
+                    </div>
+                </div>
+                <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:8px;">SNSの内訳</div>
+                <div class="tag-cloud">
+                    <div class="tag highlight">LINE 9</div>
+                    <div class="tag">Insta 2</div>
+                    <div class="tag">OpenChat 1</div>
+                </div>
+            </div>
+
+            <!-- MID TOP -->
+            <div class="card area-mid-top">
+                <div class="card-header">🧩 コンテンツごとの評価</div>
+                <div style="display:flex; gap:30px;">
+                    <div style="flex:1;">
+                        <div
+                            style="font-size:14px; font-weight:800; color:#E60012; margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px;">
+                            謎解きパート</div>
+                        <div class="tag-cloud" style="margin-bottom:15px;">
+                            <div class="tag highlight">考えごたえ 17</div>
+                            <div class="tag highlight">サポート安心 14</div>
+                            <div class="tag">丁度よい 11</div>
+                        </div>
+                        <div class="voice-box">
+                            「正解で電球が光る、最後の問題が伏線回収など、すごく凝ったプログラムだった」
+                        </div>
+                        <div class="voice-box">
+                            「本物の爆弾の線を切る体験は、子供にとって興奮の体験だったと思う」
+                        </div>
+                    </div>
+                    <div style="width:1px; background:#eee;"></div>
+                    <div style="flex:1;">
+                        <div
+                            style="font-size:14px; font-weight:800; color:#E60012; margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px;">
+                            ワークショップ</div>
+                        <div class="tag-cloud" style="margin-bottom:15px;">
+                            <div class="tag highlight">発想力 14</div>
+                            <div class="tag highlight">自由度高い 12</div>
+                            <div class="tag">廃材活用 14</div>
+                        </div>
+                        <div class="voice-box">
+                            「普段見ない廃材（金物など）がたくさんあって、子供が夢中で触っていた」
+                        </div>
+                        <div class="voice-box">
+                            「市・企業・学生が一丸となっている取り組み姿勢が素晴らしいと感じた」
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MID BOT -->
+            <div class="card area-mid-bot">
+                <div class="card-header">💡 集計からの重要インサイト</div>
+                <ul class="insight-list" style="columns: 2;">
+                    <li><b>圧倒的な満足度 (97%)</b><br>没入型ストーリーと体験型学習の融合が大成功</li>
+                    <li><b>環境意識への変容効果</b><br>「廃材でも工夫すれば使える」と70%以上が意識変化</li>
+                    <li><b>口コミとLINEの集客力</b><br>チラシよりも「人から人へ」の温かいルートが主力</li>
+                    <li><b>"学び"と"エンタメ"の両立</b><br>「楽しみながら学べた」が最多回答。説教臭さゼロ</li>
+                    <li><b>適切なサポート体制</b><br>学生スタッフの伴走が「安心感」と「満足度」へ直結</li>
+                    <li><b>リピート意向の高さ</b><br>「また参加したい」が88%。次回への期待値が高い</li>
+                </ul>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="card area-right">
+                <div class="card-header">🚀 参加者の声・今後</div>
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:8px;">今後やってみたいこと</div>
+                    <div class="stat-row">
+                        <div class="stat-label">謎解き増</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="80%"></div>
+                        </div>
+                        <div class="stat-val">20</div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label">ものづくり増</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="30%"></div>
+                        </div>
+                        <div class="stat-val">7</div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label">廃材種類増</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar" style="width:0%" data-width="20%"></div>
+                        </div>
+                        <div class="stat-val">5</div>
+                    </div>
+                </div>
+                <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:8px;">主な感想</div>
+                <div class="voice-box">
+                    「想像してたより素敵な企画でした。とても楽しかったです！」
+                </div>
+                <div class="voice-box">
+                    「2時間あっという間。大人向けでも充分楽しめます」
+                </div>
+                <div class="voice-box">
+                    「よかったと思います またよろしくお願いします」
+                </div>
+                <div class="voice-box">
+                    「学生さんやスタッフの方々が親切で、親子ともに充実した時間でした」
+                </div>
+            </div>
+
+        </div>
+        <div class="footer">Created by Antigravity | Animated Report</div>
+    </div>
+
+    <button id="replay-btn" onclick="startAnimation()">↻ Replay Animation</button>
+
+    <script>
+        function fitToScreen() {
+            const wrapper = document.getElementById('container-wrapper');
+            const sw = window.innerWidth;
+            const sh = window.innerHeight;
+            const scaleX = sw / 1920;
+            const scaleY = sh / 1080;
+            const scale = Math.min(scaleX, scaleY) * 0.95;
+
+            wrapper.style.transform = 'scale(' + scale + ')';
+        }
+        window.addEventListener('resize', fitToScreen);
+
+        // Initial scale
+        fitToScreen();
+
+        function startAnimation() {
+            const delays = {
+                card: 0.2,
+                hero: 0.5,
+                tag: 1.2,
+                voice: 1.8,
+                insight: 2.5
+            };
+
+            // Reset
+            const allAnimatable = document.querySelectorAll('.card, .hero-metric .value, .tag, .voice-box, .insight-list li');
+            allAnimatable.forEach(el => {
+                el.style.opacity = '0';
+                el.style.animation = 'none';
+            });
+
+            const bars = document.querySelectorAll('.stat-bar');
+            bars.forEach(b => {
+                b.style.width = '0%';
+                b.style.transition = 'none';
+            });
+
+            // Trigger reflow
+            void document.body.offsetWidth;
+
+            // Animate Cards
+            document.querySelectorAll('.card').forEach((el, i) => {
+                el.style.animation = `fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards ${delays.card + i * 0.1}s`;
+            });
+
+            // Animate Hero Values
+            document.querySelectorAll('.hero-metric .value').forEach((el, i) => {
+                el.style.animation = `popIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards ${delays.hero + i * 0.1}s`;
+            });
+
+            // Animate Bars
+            setTimeout(() => {
+                bars.forEach(b => {
+                    const w = b.getAttribute('data-width');
+                    b.style.transition = 'width 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
+                    b.style.width = w;
+                });
+            }, (delays.hero + 0.5) * 1000);
+
+            // Animate Tags
+            document.querySelectorAll('.tag').forEach((el, i) => {
+                el.style.animation = `popIn 0.5s ease-out forwards ${delays.tag + i * 0.05}s`;
+            });
+
+            // Animate Voices
+            document.querySelectorAll('.voice-box').forEach((el, i) => {
+                el.style.animation = `fadeInRight 0.8s ease-out forwards ${delays.voice + i * 0.2}s`;
+            });
+
+            // Animate Insights
+            document.querySelectorAll('.insight-list li').forEach((el, i) => {
+                el.style.animation = `fadeInRight 0.8s ease-out forwards ${delays.insight + i * 0.2}s`;
+            });
+        }
+
+        // Auto start
+        setTimeout(startAnimation, 500);
+    </script>
+</body>
+
+</html>

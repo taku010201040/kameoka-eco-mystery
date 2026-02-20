@@ -1,0 +1,87 @@
+{
+    "name": "Reservation",
+    "type": "object",
+    "properties": {
+        "parent_name": {
+            "type": "string",
+            "description": "\u4fdd\u8b77\u8005\u6c0f\u540d"
+        },
+        "parent_email": {
+            "type": "string",
+            "format": "email",
+            "description": "\u30e1\u30fc\u30eb\u30a2\u30c9\u30ec\u30b9"
+        },
+        "phone": {
+            "type": "string",
+            "description": "\u96fb\u8a71\u756a\u53f7"
+        },
+        "event_date": {
+            "type": "string",
+            "enum": [
+                "2026-02-07",
+                "2026-02-14"
+            ],
+            "description": "\u53c2\u52a0\u65e5\u7a0b"
+        },
+        "time_slot": {
+            "type": "string",
+            "enum": [
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00"
+            ],
+            "description": "\u53c2\u52a0\u6642\u9593"
+        },
+        "participants": {
+            "type": "array",
+            "description": "\u53c2\u52a0\u8005\u30ea\u30b9\u30c8",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "\u53c2\u52a0\u8005\u540d"
+                    },
+                    "age": {
+                        "type": "number",
+                        "description": "\u5e74\u9f62"
+                    }
+                }
+            }
+        },
+        "total_participants": {
+            "type": "number",
+            "description": "\u5408\u8a08\u53c2\u52a0\u4eba\u6570"
+        },
+        "total_amount": {
+            "type": "number",
+            "description": "\u5408\u8a08\u91d1\u984d"
+        },
+        "notes": {
+            "type": "string",
+            "description": "\u5099\u8003"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "confirmed",
+                "cancelled"
+            ],
+            "default": "pending",
+            "description": "\u4e88\u7d04\u30b9\u30c6\u30fc\u30bf\u30b9"
+        }
+    },
+    "required": [
+        "parent_name",
+        "parent_email",
+        "event_date",
+        "time_slot",
+        "participants"
+    ]
+}

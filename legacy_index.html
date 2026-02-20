@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廃材×謎解き 体験型学習イベント</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;500;700&family=Inter:wght@400;700;900&family=Outfit:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="course-selection.css">
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    <!-- <div class="overlay"></div> --> <!-- Removed overlay to make white bg visible if needed, or adjust z-index -->
+
+    <header>
+        <nav>
+            <div class="logo">廃材ロボからの挑戦状！</div>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#story">Story</a></li>
+                <li><a href="#mission1">Event</a></li>
+                <li><a href="#ws">Workshop</a></li>
+                <li><a href="#reserve" class="btn-nav">Reserve</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero section">
+            <!-- Yellow Tape -->
+            <div class="tape-container tape-yellow">
+                <div class="tape-track">
+                    <span class="tape-content">⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER ⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止
+                        ⚠️ DANGER ⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER ⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER ⚠️
+                        KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER ⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER</span>
+                    <span class="tape-content">⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER ⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止
+                        ⚠️ DANGER ⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER ⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER ⚠️
+                        KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER ⚠️ KEEP OUT ⚠️ WARNING ⚠️ 立入禁止 ⚠️ DANGER</span>
+                </div>
+            </div>
+
+            <!-- Red Tape -->
+            <div class="tape-container tape-red">
+                <div class="tape-track">
+                    <span class="tape-content">🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ 🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨
+                        爆弾解除せよ 🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ 🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ 🚨
+                        EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ 🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ</span>
+                    <span class="tape-content">🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ 🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨
+                        爆弾解除せよ 🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ 🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ 🚨
+                        EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ 🚨 EMERGENCY 🚨 緊急事態 🚨 ALERT 🚨 爆弾解除せよ</span>
+                </div>
+            </div>
+
+            <div class="hero-content">
+                <div
+                    style="font-weight:900; margin-bottom:10px; color: #000; background:#fff; display:inline-block; padding:5px; transform:rotate(-2deg);">
+                    廃材×謎解き 体験型謎解きイベント</div>
+                <h1 class="collage-title">
+                    <span class="c-block bg-red">廃材</span><span class="c-block bg-black">ロボ</span>からの<br>
+                    <span class="c-block bg-black big">挑</span><span class="c-block bg-red big">戦</span><span
+                        class="c-block bg-black big">状</span>！
+                </h1>
+                <p class="subtitle"
+                    style="font-weight:900; background:#fff; color:#000; display:inline-block; padding:5px;">
+                    キミは、この謎を解き、爆弾を解除できるのか？</p>
+                <a href="#reserve" class="btn-primary"
+                    style="border:3px solid #000; background:var(--primary-color); box-shadow:5px 5px 0 #000;">今すぐ予約する</a>
+            </div>
+        </section>
+
+        <section id="story" class="section">
+            <div class="container" style="max-width: 900px; text-align: center;">
+                <h2 class="section-title" data-text="STORY">STORY</h2>
+                <div class="story-content reveal"
+                    style="font-size: 1.15rem; line-height: 2; text-align: left; display: inline-block; background: rgba(255,255,255,0.7); padding: 40px; border-radius: 20px; border: 2px solid #000;">
+                    <p style="margin-bottom: 30px;">
+                        彼は、廃材を減らしアップサイクルの価値を伝えるためにつくられたロボット。<br>
+                        名前は <strong
+                            style="background: var(--primary-color); color:#fff; padding:0 5px;">Re:bbit（リビット）</strong>。
+                    </p>
+                    <p style="margin-bottom: 30px;">
+                        工事現場、家庭、学校……あらゆる場所で、役目を終えた部品たちが無造作に捨てられていく。<br>
+                        「もういらない」「古い」「ゴミ」——そんな理由だけで。
+                    </p>
+                    <p style="margin-bottom: 30px; font-weight: bold; font-size: 1.3rem; color: #000;">
+                        「ちゃんと役に立ってたのに……<br>
+                        使い終わった瞬間に"なかったこと"にされるなんて、おかしいでしょ！」
+                    </p>
+                    <p style="margin-bottom: 30px;">
+                        もし「当たり前」の毎日が急に止まったら？<br>
+                        電気も、機械も、すべてがピタッと動かなくなったら？
+                    </p>
+                    <p style="font-weight: bold; font-size: 1.4rem; color: #000;">
+                        <span
+                            style="background: #000; color: #fff; padding: 2px 8px;">「だったら、ボクの手で強制的に止めるしかないじゃん！」</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mission1" class="section">
+            <div class="container">
+                <h2 class="section-title" data-text="SPECIAL EVENT" style="display: block; text-align: center;">SPECIAL
+                    EVENT</h2>
+                <div class="glass-card stagger-reveal">
+                    <div class="ws-grid"> <!-- Reuse grid for consistency -->
+                        <div class="ws-text-content"
+                            style="flex:auto; text-align:center; max-width:800px; margin: 0 auto;">
+                            <h3 class="ws-title">「廃材」を学ぶ、体験型謎解きイベント<br>ロボットからの挑戦状</h3>
+                            <p class="ws-desc" style="text-align: left; display: inline-block;">
+                                亀岡市内の企業から出る廃材をテーマに、小・中学生が楽しみながら環境について学べる学習型謎解きイベントです。<br><br>
+                                廃材で作られた謎に挑戦しながら、遊んで、考えて、捨てられるものが価値あるものへと変わる体験をし、<br class="pc-only">
+                                「廃材がどのように生まれ変わるのか」「環境のためにできることは何か」を考えます。<br><br>
+                                <span style="font-weight:bold; color:var(--primary-color);">Re:bbit</span>
+                                からの挑戦状を、キミは受け取る覚悟があるか？
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ws" class="ws section">
+            <div class="container">
+                <h2 class="section-title" data-text="SPECIAL WORKSHOP" style="display: block; text-align: center;">
+                    SPECIAL WORKSHOP</h2>
+                <div class="glass-card stagger-reveal">
+                    <div class="ws-grid">
+                        <div class="ws-image-container">
+                            <img src="murakami.jpg" alt="講師: 村上さん" class="ws-image">
+                            <p class="caption">講師: 村上さん</p>
+                        </div>
+                        <div class="ws-text-content">
+                            <h3 class="ws-title">MISSION 2<br>倉庫たんけん！ワクワク廃材クラフト</h3>
+                            <p class="ws-desc">
+                                ボルトやナット、コンセントなど見たことあるような無いような道具や材料で好きなものを作ろう！<br>
+                                いろんな廃材をパーツにして自由に組み合わせて、自分だけの作品に。<br><br>
+                                マグネットにしたり、ティッシュボックスにしたり、写真立てにしたり、目をつけてモンスターにしたり。<br>
+                                電気工事屋さんの倉庫で、珍しい自分だけの宝物を見つけてみよう。
+                            </p>
+                            <div class="ws-profile">
+                                <h4>講師：村上なつか <span class="ws-role">（むらかみ道具店 店主・廃材商人）</span></h4>
+                                <p>
+                                    石川県白山市出身。2024年、循環型社会を促進するためのものづくりの廃材を見える化・流通させる「廃材商人」として、鯖江で「むらかみ道具店」を立ち上げ活動中。
+                                </p>
+                            </div>
+                            <div class="ws-alert">
+                                <p>※謎解きと同じ時間帯には予約できません。<br class="pc-only">
+                                    時間をずらして「両方参加」が断然おすすめ！</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about section">
+            <div class="container">
+                <h2 class="section-title" data-text="MISSION DETAILS" style="display: block; text-align: center;">
+                    MISSION DETAILS</h2>
+                <div class="glass-card stagger-reveal">
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <h3>DATE</h3>
+                            <p style="font-size: 1.2rem;">2026.2.7 (土)<br>2026.2.14 (土)</p>
+                        </div>
+                        <div class="detail-item">
+                            <h3>LOCATION</h3>
+                            <p><strong>TRANSit</strong><br>(星和電機工事株式会社 横)<br>亀岡市役所から徒歩3分</p>
+                        </div>
+                        <div class="detail-item">
+                            <h3>TARGET</h3>
+                            <p>小学高学年〜中学生<br><span
+                                    style="font-size: 0.8rem; font-weight: bold; color: var(--primary-color);">※保護者1人以上必須</span>
+                            </p>
+                        </div>
+                        <div class="detail-item">
+                            <h3>FEE</h3>
+                            <p>500円 / 1人</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="reserve" class="reserve section">
+            <div class="container form-container">
+                <h2 class="section-title" data-text="RESERVATION" style="display: block; text-align: center;">
+                    RESERVATION</h2>
+                <div class="glass-card stagger-reveal">
+                    <p class="form-desc" style="font-size: 1rem;">
+                        定員<br>
+                        謎解き：6組 / WS：3組<br>
+                        ※人気が予想されるため、お早めにお申し込みください。
+                    </p>
+
+                    <form id="bookingForm">
+                        <!-- コース選択（明確化） -->
+                        <div class="form-group" style="margin-bottom: 30px;">
+                            <label
+                                style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; display: block;">参加コース選択
+                                *</label>
+
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <!-- 両方参加 (黄色で目立たせる) - 一番上 -->
+                                <label class="course-option" for="course_both"
+                                    style="display: flex; align-items: center; gap: 10px; padding: 15px; border: 3px solid #ff9800; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: linear-gradient(135deg, #fff9c4 0%, #ffeb3b 100%); box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);">
+                                    <input type="radio" id="course_both" name="courseSelection" value="both" checked
+                                        style="width: 20px; height: 20px; cursor: pointer;">
+                                    <div>
+                                        <div style="font-size: 1.1rem; font-weight: bold; color: #e65100;">両方参加（謎解き +
+                                            WS）
+                                        </div>
+                                        <div
+                                            style="font-size: 0.85rem; color: #f57c00; margin-top: 3px; font-weight: 600;">
+                                            別の時間帯での参加となります
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <!-- 謎解きのみ - 小さめ -->
+                                <label class="course-option" for="course_mystery"
+                                    style="display: flex; align-items: center; gap: 8px; padding: 10px; border: 2px solid #000; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: #fff;">
+                                    <input type="radio" id="course_mystery" name="courseSelection" value="mystery"
+                                        style="width: 18px; height: 18px; cursor: pointer;">
+                                    <div>
+                                        <div style="font-size: 0.95rem; font-weight: bold;">スペシャルイベントのみ</div>
+
+                                    </div>
+                                </label>
+
+                                <!-- WSのみ - 小さめ -->
+                                <label class="course-option" for="course_ws"
+                                    style="display: flex; align-items: center; gap: 8px; padding: 10px; border: 2px solid #000; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: #fff;">
+                                    <input type="radio" id="course_ws" name="courseSelection" value="ws"
+                                        style="width: 18px; height: 18px; cursor: pointer;">
+                                    <div>
+                                        <div style="font-size: 0.95rem; font-weight: bold;">スペシャルワークショップのみ</div>
+
+                                    </div>
+                                </label>
+
+
+                            </div>
+
+                            <p
+                                style="font-size: 0.85rem; color: var(--primary-color); margin-top: 12px; font-weight: bold;">
+                                ※謎解きとWSは別の時間帯で開催されます
+                            </p>
+                        </div>
+
+                        <!-- 子供情報セクション -->
+                        <div id="childrenContainer">
+                            <div class="child-entry" data-child-index="0">
+                                <h4 style="font-size: 1.1rem; margin-bottom: 15px; color: var(--primary-color);">お子様情報 1
+                                </h4>
+
+                                <div class="form-group">
+                                    <label>お子様のお名前</label>
+                                    <input type="text" name="childName[]" required placeholder="山田 太郎">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>お名前（かな）</label>
+                                    <input type="text" name="childKana[]" required placeholder="やまだ たろう">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>お子様の年齢</label>
+                                    <input type="number" name="childAge[]" required min="6" max="18"
+                                        placeholder="例: 10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 子供追加ボタン -->
+                        <button type="button" id="addChildBtn" class="btn-add-child"
+                            style="width: 100%; padding: 12px; background: #fff; border: 2px dashed var(--primary-color); color: var(--primary-color); font-weight: bold; margin-bottom: 20px; cursor: pointer; border-radius: 8px; transition: all 0.2s;">
+                            ＋ お子様を追加
+                        </button>
+
+                        <hr style="border: none; border-top: 2px solid #eee; margin: 30px 0;">
+
+                        <!-- 連絡先情報 -->
+                        <div class="form-group">
+                            <label for="email">メールアドレス</label>
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">
+                                連絡が確実に取れるメールアドレスをご記入ください。（イベントのリマインド等に使用します）</p>
+                            <input type="email" id="email" name="email" required placeholder="example@mail.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">緊急連絡先（電話番号）</label>
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">緊急連絡先（電話番号）をご記入ください。（ハイフンなし）
+                            </p>
+                            <input type="tel" id="phone" name="phone" required placeholder="09012345678"
+                                pattern="[0-9]{10,11}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="attendeeCount">参加人数（お子様 + 保護者）</label>
+                            <input type="number" id="attendeeCount" name="attendeeCount" required min="2" max="3"
+                                placeholder="例: お子様1名+保護者1名 = 2名">
+                            <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">※保護者1人以上必須、最大3名まで</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>参加日</label>
+                            <div class="date-selector">
+                                <input type="radio" name="date" id="date1" value="2026-02-07" checked>
+                                <label for="date1" class="date-btn">2026.2.7 (Sat)</label>
+
+                                <input type="radio" name="date" id="date2" value="2026-02-14">
+                                <label for="date2" class="date-btn">2026.2.14 (Sat)</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label id="mainTimeLabel">謎解き開始時間（1枠6組限定）</label>
+                            <div id="timeSlots" class="time-grid">
+                                <!-- JSで動的に生成 -->
+                                <div class="loading-slots">Loading availability...</div>
+                            </div>
+                        </div>
+
+                        <!-- WS用時間選択 (デフォルト非表示) -->
+                        <div class="form-group" id="wsTimeSection" style="display: none;">
+                            <label id="wsTimeLabel" style="color: #e65100;">ワークショップ開始時間（1枠3組限定）</label>
+                            <div id="wsTimeSlots" class="time-grid">
+                                <!-- JSで動的に生成 -->
+                                <div class="loading-slots">Loading availability...</div>
+                            </div>
+                            <p style="font-size: 0.8rem; color: #ff0000; margin-top: 5px; font-weight: bold;">
+                                ※謎解きとは別の時間を選択してください
+                            </p>
+                        </div>
+
+                        <hr style="border: none; border-top: 2px solid #eee; margin: 30px 0;">
+
+                        <!-- 写真・映像使用同意 -->
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label style="font-weight: bold; margin-bottom: 10px; display: block;">写真・映像の使用について
+                                *</label>
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px; line-height: 1.5;">
+                                イベント記録および今後の広報活動（Webサイト・SNS・印刷物等）を目的として、<br>
+                                イベント中に写真・動画を撮影する場合があります。<br>
+                                撮影および使用について、ご了承いただけますか？<br>
+                                ※同意いただけない場合でも、イベントにはご参加いただけます。
+                            </p>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <label for="photoAgree"
+                                    style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <input type="radio" id="photoAgree" name="photoConsent" value="agree" required
+                                        style="width: 18px; height: 18px;">
+                                    <span>同意する</span>
+                                </label>
+                                <label for="photoDisagree"
+                                    style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <input type="radio" id="photoDisagree" name="photoConsent" value="disagree"
+                                        style="width: 18px; height: 18px;">
+                                    <span>同意しない</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 個人情報同意 -->
+                        <div class="form-group" style="margin-bottom: 25px;">
+                            <label style="font-weight: bold; margin-bottom: 10px; display: block;">個人情報の取り扱いについて
+                                *</label>
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px; line-height: 1.5;">
+                                ご記入いただいた個人情報は、本イベントの運営・連絡・統計目的のみに使用され、それ以外の目的では使用しません。</p>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="privacyConsent" name="privacyConsent" required
+                                    style="width: 18px; height: 18px;">
+                                <span>この内容に同意します</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <span class="btn-text">挑戦状を受け取る<br><span
+                                    style="font-size:0.8rem; font-weight:normal;">(予約フォームへ移動)</span></span>
+                            <span class="btn-loading" style="display:none;">TRANSMITTING...</span>
+                        </button>
+                        <div id="messageArea"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container" style="padding: 40px 20px;">
+            <p style="margin-bottom: 20px;">
+                <strong>主催</strong><br>
+                かめおか共創支援プロジェクト 学生チーム(環境班) / 亀岡市(商工観光課)
+            </p>
+            <p style="margin-bottom: 20px;">
+                <strong>協力</strong><br>
+                星和電機工事株式会社
+            </p>
+            <p>&copy; 2025 Kameoka Eco Mystery Project. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

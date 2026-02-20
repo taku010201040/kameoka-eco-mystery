@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アンケート詳細集計レポート | 3D Edition</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --primary: #E60012;
+      --bg: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --text: #111111;
+    }
+
+    body {
+      font-family: "Inter", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      line-height: 1.7;
+      color: var(--text);
+      background-color: var(--bg);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    #content {
+      max-width: 900px;
+      width: 100%;
+      padding-top: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.8em;
+      margin-bottom: 50px;
+      font-weight: 900;
+      color: #000;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+      position: relative;
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 8px;
+      background: var(--primary);
+      margin: 15px auto;
+      transform: skewX(-15deg);
+    }
+
+    section {
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 3px solid #000;
+      border-radius: 30px;
+      padding: 40px;
+      margin-bottom: 50px;
+      box-shadow: 15px 15px 0 rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    section:hover {
+      transform: translate(-5px, -5px);
+      box-shadow: 20px 20px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Custom Bar Chart */
+    .bar-chart-container {
+      margin: 20px 0;
+      padding: 10px;
+    }
+
+    .bar-row {
+      margin-bottom: 15px;
+    }
+
+    .bar-label {
+      font-weight: 600;
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+
+    .bar-track {
+      height: 12px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #ddd;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #E60012 0%, #ff4d4d 100%);
+      border-radius: 6px;
+      width: 0;
+      transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .bar-value {
+      font-size: 0.8em;
+      text-align: right;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    blockquote {
+      background: rgba(0, 0, 0, 0.02);
+      border-left: 4px solid var(--primary);
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 0 10px 10px 0;
+      font-style: italic;
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    th {
+      background: #000;
+      color: #fff;
+      text-align: left;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .print-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      padding: 15px 25px;
+      background: #000;
+      color: white;
+      border: 2px solid var(--primary);
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .print-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.2);
+      background: var(--primary);
+    }
+
+    @media print {
+
+      .print-btn,
+      #bg-canvas {
+        display: none;
+      }
+
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      section {
+        box-shadow: none;
+        border: 1px solid #000;
+        background: white;
+        break-inside: avoid;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <button onclick="window.print()" class="print-btn no-print">PDFとして保存 / 印刷</button>
+
+  <div id="content"></div>
+
+  <textarea id="markdown-source" style="display:none">
+# 📋 ロボットからの挑戦状！ アンケート詳細集計レポート
+
+**開催日:** 2026年2月7日、14日  
+**集計対象件数:** 33件 (2月7日: 18件 / 2月14日: 15件)
+
+---
+
+<section class="reveal">
+
+### ■ Q1. イベントを知ったきっかけ
+
+知人からの紹介: 16件  
+SNS: 12件  
+チラシ: 3件  
+亀岡市HP: 1件  
+いこーよ: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 知人からの紹介 | 16 | 48.5% |
+| SNS | 12 | 36.4% |
+| チラシ | 3 | 9.1% |
+| 亀岡市HP | 1 | 3.0% |
+| いこーよ | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q2. SNSの詳細名称
+
+亀岡市公式LINE: 9件  
+公式Instagram: 2件  
+オープンチャット: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 亀岡市公式LINE | 9 | 27.3% |
+| 公式Instagram | 2 | 6.1% |
+| オープンチャット | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q3. チラシ配布場所
+
+ガレリア亀岡だったと思います: 1件  
+妻が持ってきたため不明: 1件  
+マツモト: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| ガレリア亀岡だったと思います | 1 | 3.0% |
+| 妻が持ってきたため不明 | 1 | 3.0% |
+| マツモト | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q4. 参加人数（お子様）
+
+1名: 17件  
+2名: 15件  
+3名: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 1名 | 17 | 51.5% |
+| 2名 | 15 | 45.5% |
+| 3名 | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q5. お子様の年齢
+
+小学生（高学年）: 18件  
+小学生（低学年）: 15件  
+未就学児: 5件  
+その他: 4件  
+大学生: 2件  
+21: 1件  
+中学生: 1件  
+21歳: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 小学生（高学年） | 18 | 54.5% |
+| 小学生（低学年） | 15 | 45.5% |
+| 未就学児 | 5 | 15.2% |
+| その他 | 4 | 12.1% |
+| 大学生 | 2 | 6.1% |
+| 21 | 1 | 3.0% |
+| 中学生 | 1 | 3.0% |
+| 21歳 | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q6. 参加内容
+
+両方: 18件  
+謎解きのみ: 12件  
+ワークショップのみ: 3件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 両方 | 18 | 54.5% |
+| 謎解きのみ | 12 | 36.4% |
+| ワークショップのみ | 3 | 9.1% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q7. 全体の満足度
+
+とても満足した: 29件  
+満足した: 3件  
+普通だった: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| とても満足した | 29 | 87.9% |
+| 満足した | 3 | 9.1% |
+| 普通だった | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q8. 価格の妥当性
+
+妥当: 21件  
+安い: 11件  
+高い: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 妥当 | 21 | 63.6% |
+| 安い | 11 | 33.3% |
+| 高い | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q9. 楽しかった内容
+
+謎解き: 28件  
+ワークショップ（ものづくり）: 11件  
+ストーリーや世界観: 9件  
+廃材を選ぶ・触る体験: 8件  
+チームで協力すること: 4件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 謎解き | 28 | 84.8% |
+| ワークショップ（ものづくり） | 11 | 33.3% |
+| ストーリーや世界観 | 9 | 27.3% |
+| 廃材を選ぶ・触る体験 | 8 | 24.2% |
+| チームで協力すること | 4 | 12.1% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q10. 謎解きの感想 (タグ選択)
+
+考えごたえがあった: 17件  
+サポートがあったので安心して取り組めた: 14件  
+全体としてちょうどよかった: 11件  
+とても楽しく考えていた: 8件  
+楽しみながら取り組めていた: 8件  
+年齢によって感じ方が分かれそうだと感じた: 3件  
+一部に難しいと感じる場面があった: 2件  
+少し難しそうにしていた: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 考えごたえがあった | 17 | 51.5% |
+| サポートがあったので安心して取り組めた | 14 | 42.4% |
+| 全体としてちょうどよかった | 11 | 33.3% |
+| とても楽しく考えていた | 8 | 24.2% |
+| 楽しみながら取り組めていた | 8 | 24.2% |
+| 年齢によって感じ方が分かれそうだと感じた | 3 | 9.1% |
+| 一部に難しいと感じる場面があった | 2 | 6.1% |
+| 少し難しそうにしていた | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q11. 謎解きの感想 (自由記述)
+
+> 最後の青色はコナンの映画と同じで良かった。
+
+> 正解すると電球が光る仕組み、最後の問題を解く際にそれまでの問題が伏線になっていて、すごく凝ったプログラムでした。
+
+> スタッフの方全員が世界観や楽しい雰囲気をつくられていたので難しい問題でも楽しく取り組めました。爆弾という、こどもが好きなものも、また興味を持ちやすく、よかったです！
+
+> サポートがしっかりしていた
+
+> 兄弟で参加すると、回答用紙が一枚しかないので、全部兄が解いてしまって弟は考える時間もなくて残念でした。
+
+> シンプルでとても良かった
+
+> 爆弾解除まで、実践できたこと。
+
+> 子供二人が協力していたこと
+
+> 本物の爆弾があって、まさか本当に切って止めるなんて！
+
+> ごみを減らすことを、楽しく教えてくれたこと。問題もよく考えられていて凄かったです！
+
+> 大人でも難しいと感じるレベルで一緒に楽しめました。電気が光ったとき嬉しかったです
+
+> すぐにわかる問いではなく、悩むところがたくさんある内容で学びがありました。
+
+> 想像以上のゲームでおもしろかった
+
+> スタッフの方に声掛けをしてもらえた事で難しい雰囲気が緩和されて楽しかった。
+
+> ごみ問題の知識を知りながら、解いていけるのが良かった。
+
+> 数字を選ぶ問題を、何度も間違えながら進めたこと。
+
+> 最後、実際に電気のコードが切らせてもらえるのが良かった。
+
+> 爆発する、という設定がドキドキして面白かった。
+
+> スタッフの方々のフォローが手厚く、安心して取り組めた。
+
+> 丁度いい謎解きだった。このクイズを作ったこと自体が素晴らしい👏
+
+> 爆弾の線を切る体験は、子供にとって楽しい体験だったと思う。
+
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q12. WSへの取り組み
+
+とても楽しく取り組めていた: 19件  
+（未回答）: 12件  
+楽しそうだった: 2件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| とても楽しく取り組めていた | 19 | 57.6% |
+| （未回答） | 12 | 36.4% |
+| 楽しそうだった | 2 | 6.1% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q13. WS難易度 (タグ選択)
+
+発想力を使う内容だった: 14件  
+自由度が高く取り組みやすかった: 12件  
+スタッフのサポートが丁度良かった: 4件  
+少し難しいと感じる場面があった: 3件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 発想力を使う内容だった | 14 | 42.4% |
+| 自由度が高く取り組みやすかった | 12 | 36.4% |
+| スタッフのサポートが丁度良かった | 4 | 12.1% |
+| 少し難しいと感じる場面があった | 3 | 9.1% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q14. 廃材への気づき (タグ選択)
+
+廃材でも工夫すれば使えること: 14件  
+ごみになる前に再利用できること: 10件  
+環境問題と身近な生活がつながっていること: 8件  
+その他: 1件  
+有価金属？: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 廃材でも工夫すれば使えること | 14 | 42.4% |
+| ごみになる前に再利用できること | 10 | 30.3% |
+| 環境問題と身近な生活がつながっていること | 8 | 24.2% |
+| その他 | 1 | 3.0% |
+| 有価金属？ | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q15. 作品の満足度
+
+とても満足していた: 17件  
+（未回答）: 12件  
+満足していた: 3件  
+ふつうだった: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| とても満足していた | 17 | 51.5% |
+| （未回答） | 12 | 36.4% |
+| 満足していた | 3 | 9.1% |
+| ふつうだった | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q16. 作品の感想 (自由記述)
+
+> 丁寧にサポートしていただき、とても良い雰囲気で作業出来て楽しかったです
+
+> 普段、みない廃材もあり珍しそうに触っていました。
+
+> ものづくりが好きなので、楽しめていた
+
+> 自由度の高さ
+
+> 楽しそうだった
+
+> たくさん材料があって、こどもたちは楽しそうだった！
+
+> これ、何に使ってたんだろうと気になって、考えるきっかけになりました。
+
+> あそのような材料を使わせてもらえるのが本当にびっくりでした。協力してくれた星和さんにとても感謝です。
+
+> 自由に普段馴染みのない素材を使って工作できたところ。ゲームも楽しかったです。
+
+> 普段工作で使う廃材は紙の箱とか家で出るものばかりなので金物がたくさんあったりして楽しかった。見ていて親の方が作りたくなって困った。
+
+> 廃材の種類が多く自由度が高かった
+
+> 市と企業、大学生が一丸となって、このような取り組みをしているのが素晴らしいと感じた。
+
+> 学生の方々やスタッフの方が楽しく声をかけてくれて、楽しい時間を過ごせました。
+
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q17. 環境意識の変化
+
+感じた: 12件  
+強く感じた: 12件  
+（未回答）: 6件  
+少し感じた: 2件  
+あまり感じなかった: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 感じた | 12 | 36.4% |
+| 強く感じた | 12 | 36.4% |
+| （未回答） | 6 | 18.2% |
+| 少し感じた | 2 | 6.1% |
+| あまり感じなかった | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q18. 学び・気づき (タグ選択)
+
+楽しみながら学べていた: 28件  
+自分で考える場面が多かった: 9件  
+環境について自然に考える内容だった: 7件  
+難しかったが良い経験になった: 4件  
+学びは感じなかった: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 楽しみながら学べていた | 28 | 84.8% |
+| 自分で考える場面が多かった | 9 | 27.3% |
+| 環境について自然に考える内容だった | 7 | 21.2% |
+| 難しかったが良い経験になった | 4 | 12.1% |
+| 学びは感じなかった | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q19. 困った点 (タグ選択)
+
+特に困った点はなかった: 27件  
+時間が短く感じた: 3件  
+その他: 2件  
+制限時間内に早く終わろうとしていて: 1件  
+学びになりそうな資料を完全に読み飛ばしていた: 1件  
+説明が少し分かりにくかった: 1件  
+廃材は接着しにくい素材が多く: 1件  
+接着剤: 1件  
+グルーガンでくっつけるのに苦労した。: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 特に困った点はなかった | 27 | 81.8% |
+| 時間が短く感じた | 3 | 9.1% |
+| その他 | 2 | 6.1% |
+| 制限時間内に早く終わろうとしていて | 1 | 3.0% |
+| 学びになりそうな資料を完全に読み飛ばしていた | 1 | 3.0% |
+| 説明が少し分かりにくかった | 1 | 3.0% |
+| 廃材は接着しにくい素材が多く | 1 | 3.0% |
+| 接着剤 | 1 | 3.0% |
+| グルーガンでくっつけるのに苦労した。 | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q20. 困った点 (自由記述)
+
+> イベントの楽しみ（エンタメ性）と学びの両立が難しそうですね。
+
+> 電材は使わなくなった理由なんかも聞けたらなぁと思った
+
+> 特にありません。
+
+> 楽しかったのでもっと問題があってもよかった。
+
+> またやってほしいと思います。謎解きの問題もよく出来ていて良かったです！
+
+> 大人には良い室温だったが頭を使ったからか子供が熱っていた気がした。
+
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q21. 今後あったらいいな (タグ選択)
+
+謎解きをもっとやりたかった: 20件  
+ものづくりの時間を増やしたい: 7件  
+その他: 5件  
+廃材の種類を増やしてほしい: 4件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 謎解きをもっとやりたかった | 20 | 60.6% |
+| ものづくりの時間を増やしたい | 7 | 21.2% |
+| その他 | 5 | 15.2% |
+| 廃材の種類を増やしてほしい | 4 | 12.1% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q22. 今後あったらいいな (自由記述)
+
+> グループで考えるワークがあれば素敵だなと思いました。
+
+> 廃材作品鑑賞 +ワークショップ
+
+> 科学好きの子供のための、もう少し深いイベント
+
+> かんたんな電気工事
+
+> ごめんなさい。ありません。
+
+> ものづくり
+
+> この内容でブラッシュアップしてゴミの事、環境の事を知りたい。
+
+> リアル脱出ゲーム、町中のロールプレイングゲーム
+
+> 専門分野の工具や重機など触らせて体験させてもらえる場は貴重なので危険を伴うことも踏まえていい経験ができるので是非機会があればやりたい。
+
+> 電気を使ったおもちゃなどを作りたい。
+
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q23. 今後の参加意向
+
+ぜひ参加したい: 22件  
+機会があれば参加したい: 6件  
+（未回答）: 3件  
+内容次第で検討したい: 1件  
+ぜひ参加したい, 機会があれば参加したい, 内容次第で検討したい: 1件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| ぜひ参加したい | 22 | 66.7% |
+| 機会があれば参加したい | 6 | 18.2% |
+| （未回答） | 3 | 9.1% |
+| 内容次第で検討したい | 1 | 3.0% |
+| ぜひ参加したい, 機会があれば参加したい, 内容次第で検討したい | 1 | 3.0% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q24. 全体を通した感想 (自由記述)
+
+> とても楽しく出来ました。謎解きが好きですが、身近でそういうイベントがなかなか無いので、良かったです。
+
+> 素敵なイベントをありがとうございました！
+
+> 今日は体験させていただきありがとうございました。
+
+> とても楽しんでいました。低学年なので、難しいかなと思っていましたがスタッフの方がとても優しくサポートしてくださったので、問題が難しくても取り組めました。大学生の方たちや企業さんの協力で開催されたとのこと。とても素晴らしい企画だと思いました。内容もこどもが好きなことがつめこまれており、最後までとても楽しく過ごしていました。
+
+> 楽しくできました！ありがとうございます。
+
+> 子供たちも楽しそうでした。ありがとうございます。
+
+> スタッフのお兄さんお姉さんが優しく盛り上げてくれて楽しかったです
+
+> 想像してたより素敵な企画でした。とても楽しかったです！
+
+> 本当に楽しい企画でした。
+
+> 楽しめた
+
+> ドキドキしながら謎解きができて、参加しごたえがありました！
+
+> とても楽しかったです！ありがとうございました😊
+
+> 親子で楽しく解けました。ありがとうございました。
+
+> 親子でとても楽しめました！！ありがとうございました。
+
+> とても楽しく参加させてもらえました。スタッフ(学生)のみなさんもあたたかい雰囲気で子どもたちも緊張せずに楽しめたと思います。また遊びながら学べるイベントがあれば参加したいです。
+
+> とても楽しく子どもが取り組んでいました。子供を外に目的を持って連れていけるのでたすこります。
+
+> 2時間あっという間でした。親の方も真剣になってしまい、大人向けでも充分楽しめます。というか幼稚な感じではないから子ども達もたのしんでいたのではないかな？と思います。
+
+> スタッフの方が優しく手厚くサポートしてくださったので楽しかったです。ありがとうございました！
+
+> とても楽しく考える場になりました、
+
+> ほんとに楽しかったです。謎解きとワークショップで一日中楽しめました。
+
+> 普段入れない倉庫でのワークショップ、たくさんの廃材にとてもわくわくしていました。手作りのビリビリ棒や、ネジを積むゲームなども楽しんでいました。学生さんやスタッフの方々がとても親切に、楽しく声をかけていただいたので、充実した時間を過ごせました。ありがとうございました。
+
+</section>
+
+---
+
+<section class="reveal">
+
+### ■ Q25. 星和電機イベント参加意向
+
+参加したい: 27件  
+内容次第: 4件  
+
+<details><summary>詳細表を表示</summary>
+
+| 選択肢 | 回答数 | 割合 |
+| :--- | :---: | :---: |
+| 参加したい | 27 | 81.8% |
+| 内容次第 | 4 | 12.1% |
+
+</details>
+</section>
+
+---
+
+<section class="reveal">
+
+# 💡 集計結果からの考察・インサイト
+
+## 1. 非常に高い満足度とリピート意向
+全体の満足度は**97%**（とても満足・満足の合計）に達しており、星和電機イベントへの今後の参加意向も**87%**と非常に高い数値を示しています。単なるイベント体験に留まらず、企業のファンづくりに大きく寄与していることが伺えます。
+
+## 2. 謎解きギミックによる「没入型」学習の成功
+「特に楽しかった内容」で**85%**が謎解きを挙げています。自由記述からは「実際に爆弾の線を切る体験」が子供たちの心に強く残っており、ストーリーと連動した体験型学習が、環境問題という硬いテーマへの心理的ハードルを下げていることが分かります。
+
+## 3. 環境意識への明確なポジティブ・インパクト
+廃材への気づきとして「工夫すれば使える」「再利用できる」といった回答が多く寄せられ、環境意識の変化も**「強く感じた・感じた」が多数**を占めています。ワークショップで実際に廃材に触れる体験が、SDGsの概念を身近なものとして捉えるきっかけとなっています。
+
+## 4. 地域コミュニティと公式SNSによる強力な集客
+流入経路の約半分（**48%**）が「知人からの紹介」であり、次いで「亀岡市公式LINE（**27%**）」となっています。地域内での口コミと行政の広報が効果的に機能しており、コミュニティに根ざした集客が重要であることが分かります。
+
+## 5. 今後の運営に向けた改善の種
+自由記述からは「兄弟参加時に回答用紙が1枚だと奪い合いになる」といった運営上の課題も明確になりました。今後は**「人数分のキット配布」**や**「年齢に合わせた難易度設定の微調整」**を行うことで、さらに満足度を高められる可能性があります。
+
+</section>
+
+---
+
+</textarea>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // --- Markdown Rendering ---
+      const markdownSource = document.getElementById('markdown-source').value;
+      const contentDiv = document.getElementById('content');
+      contentDiv.innerHTML = marked.parse(markdownSource);
+
+      // --- Mermaid Rendering ---
+      const mermaidBlocks = document.querySelectorAll('code.language-mermaid');
+      mermaidBlocks.forEach((block) => {
+        const parentPre = block.parentElement;
+        const div = document.createElement('div');
+        div.className = 'mermaid';
+        div.textContent = block.textContent;
+        parentPre.replaceWith(div);
+      });
+      mermaid.initialize({ startOnLoad: true, theme: 'default' });
+
+      // --- Scroll Animations ---
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            // Trigger bar animations
+            const bars = entry.target.querySelectorAll('.bar-fill');
+            bars.forEach(bar => {
+              const targetWidth = bar.style.width;
+              bar.style.width = '0';
+              setTimeout(() => bar.style.width = targetWidth, 100);
+            });
+          }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // --- Three.js Background (HP Style) ---
+      const canvas = document.getElementById('bg-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      const scene = new THREE.Scene();
+      // White background normally, but we keep it transparent to use body bg
+      // scene.background = new THREE.Color(0xffffff); 
+
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 5;
+
+      // Shapes
+      const geometry = new THREE.IcosahedronGeometry(1, 0);
+      const materialRed = new THREE.MeshBasicMaterial({ color: 0xE60012, wireframe: true });
+      const materialBlack = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+
+      const shapes = [];
+
+      // Add Red Shape
+      const shape1 = new THREE.Mesh(geometry, materialRed);
+      shape1.position.set(-2, 1, -2);
+      scene.add(shape1);
+      shapes.push({ mesh: shape1, speed: 0.002 });
+
+      // Add Black Shape
+      const shape2 = new THREE.Mesh(geometry, materialBlack);
+      shape2.position.set(2, -1, -1);
+      shape2.scale.set(1.5, 1.5, 1.5);
+      scene.add(shape2);
+      shapes.push({ mesh: shape2, speed: -0.001 });
+
+      // Add smaller floating elements
+      for (let i = 0; i < 5; i++) {
+        const isRed = Math.random() > 0.5;
+        const s = new THREE.Mesh(geometry, isRed ? materialRed : materialBlack);
+        s.position.set(
+          (Math.random() - 0.5) * 10,
+          (Math.random() - 0.5) * 10,
+          (Math.random() - 0.5) * 5
+        );
+        s.scale.setScalar(Math.random() * 0.5 + 0.2);
+        scene.add(s);
+        shapes.push({ mesh: s, speed: (Math.random() - 0.5) * 0.01 });
+      }
+
+      // Mouse interaction
+      let mouseX = 0;
+      let mouseY = 0;
+      document.addEventListener('mousemove', (event) => {
+        mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+        mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        shapes.forEach(item => {
+          item.mesh.rotation.x += item.speed;
+          item.mesh.rotation.y += item.speed;
+        });
+
+        // Gentle camera sway
+        camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+        camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    });
+  </script>
+</body>
+
+</html>
