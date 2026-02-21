@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>集客系アンケート集計結果</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark: #395544;
+            --green-mid: #54645A;
+            --green-light: #95A59B;
+            --beige: #F7F4EF;
+            --beige-dark: #EDE8E0;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--beige);
+            color: var(--green-mid);
+            padding: 40px 20px 60px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            letter-spacing: 0.04em;
+        }
+
+        header p {
+            margin-top: 8px;
+            font-size: 0.88rem;
+            color: var(--green-light);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 32px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1.5px solid var(--green-light);
+            border-radius: 16px;
+            padding: 28px 24px 32px;
+            box-shadow: 0 2px 12px rgba(57, 85, 68, 0.07);
+        }
+
+        .card-title {
+            display: inline-block;
+            background: var(--green-dark);
+            color: var(--white);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            padding: 3px 12px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+
+        .card-question {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 4px;
+        }
+
+        .card-total {
+            font-size: 0.8rem;
+            color: var(--green-light);
+            margin-bottom: 20px;
+        }
+
+        .chart-wrap {
+            position: relative;
+            max-width: 280px;
+            margin: 0 auto 20px;
+        }
+
+        .legend-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.84rem;
+        }
+
+        .legend-color {
+            width: 13px;
+            height: 13px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .legend-label {
+            flex: 1;
+            color: var(--green-mid);
+        }
+
+        .legend-value {
+            font-weight: 700;
+            color: var(--green-dark);
+            white-space: nowrap;
+        }
+
+        .legend-pct {
+            color: var(--green-light);
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 56px;
+            font-size: 0.78rem;
+            color: var(--green-light);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>集客系アンケート集計結果</h1>
+        <p>ロボットからの挑戦状！ | 開催日：2026年2月7日・14日 | 集計件数：33件</p>
+    </header>
+
+    <div class="grid">
+
+        <!-- Q1 -->
+        <div class="card">
+            <span class="card-title">Q1</span>
+            <p class="card-question">イベントを知ったきっかけ</p>
+            <p class="card-total">有効回答：33件</p>
+            <div class="chart-wrap">
+                <canvas id="chart1"></canvas>
+            </div>
+            <ul class="legend-list" id="legend1"></ul>
+        </div>
+
+        <!-- Q2 -->
+        <div class="card">
+            <span class="card-title">Q2</span>
+            <p class="card-question">SNSの詳細（SNS経由12件の内訳）</p>
+            <p class="card-total">有効回答：12件</p>
+            <div class="chart-wrap">
+                <canvas id="chart2"></canvas>
+            </div>
+            <ul class="legend-list" id="legend2"></ul>
+        </div>
+
+        <!-- Q23 -->
+        <div class="card">
+            <span class="card-title">Q23</span>
+            <p class="card-question">今後の参加意向</p>
+            <p class="card-total">有効回答：33件</p>
+            <div class="chart-wrap">
+                <canvas id="chart3"></canvas>
+            </div>
+            <ul class="legend-list" id="legend3"></ul>
+        </div>
+
+        <!-- Q25 -->
+        <div class="card">
+            <span class="card-title">Q25</span>
+            <p class="card-question">星和電機イベントへの参加意向</p>
+            <p class="card-total">有効回答：31件</p>
+            <div class="chart-wrap">
+                <canvas id="chart4"></canvas>
+            </div>
+            <ul class="legend-list" id="legend4"></ul>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>集計：2026年2月 / ロボットからの挑戦状！ アンケート</p>
+    </footer>
+
+    <script>
+        // ===== カラーパレット =====
+        const C = {
+            dark: '#395544',
+            mid: '#54645A',
+            light: '#95A59B',
+            beige: '#F7F4EF',
+            // バリエーション
+            dark2: '#4A7060',
+            dark3: '#6B9080',
+            dark4: '#B5C5BC',
+            dark5: '#D4DDD9',
+        };
+
+        // ===== データ定義 =====
+        const charts = [
+            {
+                id: 'chart1',
+                legendId: 'legend1',
+                labels: ['知人からの紹介', 'SNS', 'チラシ', '亀岡市HP', 'いこーよ'],
+                data: [16, 12, 3, 1, 1],
+                colors: [C.dark, C.mid, C.dark2, C.light, C.dark4],
+            },
+            {
+                id: 'chart2',
+                legendId: 'legend2',
+                labels: ['亀岡市公式LINE', '公式Instagram', 'オープンチャット'],
+                data: [9, 2, 1],
+                colors: [C.dark, C.dark2, C.light],
+            },
+            {
+                id: 'chart3',
+                legendId: 'legend3',
+                labels: ['ぜひ参加したい', '機会があれば参加したい', '内容次第で検討', '学年に見合ったなら', '未回答'],
+                data: [23, 6, 2, 1, 3],
+                colors: [C.dark, C.dark2, C.light, C.dark4, C.beige],
+                borderColors: [C.dark, C.dark2, C.light, C.dark4, C.mid],
+            },
+            {
+                id: 'chart4',
+                legendId: 'legend4',
+                labels: ['参加したい', '内容次第'],
+                data: [27, 4],
+                colors: [C.dark, C.light],
+            },
+        ];
+
+        // ===== グラフ描画関数 =====
+        function buildChart({ id, legendId, labels, data, colors, borderColors }) {
+            const total = data.reduce((a, b) => a + b, 0);
+            const ctx = document.getElementById(id).getContext('2d');
+            const bc = borderColors || colors.map(() => '#fff');
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: colors,
+                        borderColor: bc,
+                        borderWidth: 2,
+                        hoverOffset: 10,
+                    }]
+                },
+                options: {
+                    cutout: '58%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const val = ctx.parsed;
+                                    const pct = ((val / total) * 100).toFixed(1);
+                                    return ` ${val}件（${pct}%）`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // カスタム凡例
+            const ul = document.getElementById(legendId);
+            labels.forEach((label, i) => {
+                const pct = ((data[i] / total) * 100).toFixed(1);
+                const li = document.createElement('li');
+                li.className = 'legend-item';
+                li.innerHTML = `
+        <span class="legend-color" style="background:${colors[i]};"></span>
+        <span class="legend-label">${label}</span>
+        <span class="legend-value">${data[i]}件</span>
+        <span class="legend-pct">&nbsp;${pct}%</span>
+      `;
+                ul.appendChild(li);
+            });
+        }
+
+        charts.forEach(buildChart);
+    </script>
+</body>
+
+</html>
